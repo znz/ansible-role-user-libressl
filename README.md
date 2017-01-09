@@ -9,8 +9,6 @@
 
 ## Role Variables
 
-- `libressl_user`: user
-- `libressl_group`: group
 - `libressl_download_dir`: download directory
 - `libressl_build_dir`: build directory
 - `libressl_prefix`: prefix argument of configure

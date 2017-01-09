@@ -3,8 +3,8 @@
   file:
     state: directory
     path: "{{ libressl_download_dir }}"
-    owner: "{{ libressl_user }}"
-    group: "{{ libressl_group }}"
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
     mode: 0755
 - name: "download libressl"
   get_url:
@@ -15,8 +15,8 @@
   file:
     state: directory
     path: "{{ libressl_build_dir }}"
-    owner: "{{ libressl_user }}"
-    group: "{{ libressl_group }}"
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
     mode: 0755
 - name: "extract libressl-{{ libressl_version }}"
   unarchive:
