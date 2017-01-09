@@ -1,0 +1,44 @@
+---
+- name: "{{ libressl_download_dir }}"
+  file:
+    state: directory
+    path: "{{ libressl_download_dir }}"
+    owner: "{{ libressl_user }}"
+    group: "{{ libressl_group }}"
+    mode: 0755
+- name: "download libressl"
+  get_url:
+    url: "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-{{ libressl_version }}.tar.gz"
+    dest: "{{ libressl_download_dir }}/libressl-{{ libressl_version }}.tar.gz"
+    checksum: "sha256:{{ libressl_sha256 }}"
+- name: "{{ libressl_build_dir }}"
+  file:
+    state: directory
+    path: "{{ libressl_build_dir }}"
+    owner: "{{ libressl_user }}"
+    group: "{{ libressl_group }}"
+    mode: 0755
+- name: "extract libressl-{{ libressl_version }}"
+  unarchive:
+    src: "{{ libressl_download_dir }}/libressl-{{ libressl_version }}.tar.gz"
+    dest: "{{ libressl_build_dir }}"
+    remote_src: yes
+    creates: "{{ libressl_build_dir }}/libressl-{{ libressl_version }}/configure"
+- name: "configure"
+  command: './configure --prefix="{{ libressl_prefix }}"'
+  args:
+    chdir: "{{ libressl_build_dir }}/libressl-{{ libressl_version }}"
+    creates: "{{ libressl_build_dir }}/libressl-{{ libressl_version }}/Makefile"
+- name: "make"
+  make:
+    chdir: "{{ libressl_build_dir }}/libressl-{{ libressl_version }}"
+- name: "make check"
+  shell: "make check >check.log 2>&1"
+  args:
+    chdir: "{{ libressl_build_dir }}/libressl-{{ libressl_version }}"
+    creates: "{{ libressl_build_dir }}/libressl-{{ libressl_version }}/check.log"
+- name: "make install"
+  command: "make install"
+  args:
+    chdir: "{{ libressl_build_dir }}/libressl-{{ libressl_version }}"
+    creates: "{{ libressl_prefix }}/bin/openssl"
